@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "نام کاربری یا رمز عبور اشتباه است." }, { status: 401 });
     }
 
-    // گرفتن لیست نمرات از دیتابیس
+    // گرفتن لیست نمرات از دیتابیس با فیلدهای درخواستی
     const { rows } = await sql`
       SELECT name, father_name as "fatherName", province, student_id as "studentId", score
       FROM exam_results
@@ -18,9 +18,9 @@ export async function POST(request: Request) {
     `;
 
     return NextResponse.json(rows);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Admin API Error:', error);
-    // اگر دیتابیس وصل نباشد، لیست خالی برمی‌گردانیم تا خطا ندهد
-    return NextResponse.json([]);
+    // اگر خطای دیتابیس بود، پیام واضح‌تری می‌دهیم
+    return NextResponse.json({ error: "خطا در پایگاه داده ویرسل: " + error.message }, { status: 500 });
   }
 }
